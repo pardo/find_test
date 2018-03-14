@@ -1,0 +1,26 @@
+#!/bin/bash
+
+run_test () {
+  # replace with your code
+  echo "Running test for" $1
+}
+
+# $1 class name could be dotted with a method
+class_name=$1
+method_name=""
+if [[ $class_name = *"."* ]]; then
+  class_name=$(echo $1 | cut -d "." -f 1)
+  method_name=$(echo $1 | cut -d "." -f 2)
+fi
+
+# find the class name and replace / with .
+dotted_path=$(git grep "class "$class_name"(" | cut -d ":" -f 1 | sed -e "s/\.\///g" -e "s/\//./g" -e "s/\.py//g")
+
+for path in $dotted_path
+do
+  if [ -z "$method_name" ]; then
+    run_test $path.$class_name
+  else
+    run_test $path.$class_name.$method_name
+  fi
+done
